@@ -1,0 +1,20 @@
+[package]
+name = "bit_operate"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[[example]]
+name = "bit_composition_01"
+path = "src/bit_composition_sample.rs"
+
+[[example]]
+name = "bit_composition_02"
+path = "src/bit_composition_struct_sample.rs"
+
+[[example]]
+name = "bit_divide"
+path = "src/bit_divide.rs"
