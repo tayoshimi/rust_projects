@@ -21,7 +21,7 @@ impl Node {
 pub fn add_child(node: &Rc<Node>, child: Rc<Node>) {
     *child.parent.borrow_mut() = Rc::downgrade(node);
     node.children.borrow_mut().push(child);
-} 
+}
 
 fn dump(node: &Rc<Node>) {
     print!("node({}) ", node.value);
