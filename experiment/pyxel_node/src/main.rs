@@ -5,6 +5,7 @@ use petgraph::Graph;
 use petgraph::Direction;
 use petgraph::graph::NodeIndex;
 use petgraph::prelude::Dfs;
+use petgraph::visit::EdgeRef;
 
 // fn draw_text_with_border(x: f64, y: f64, s: &str, col, bcol, font, pyxel: &mut Pyxel) {
 //     for dx in range(-1, 2):
@@ -43,17 +44,21 @@ impl Node {
     pub fn update(&mut self, pyxel: &mut Pyxel) {
     }
 
-    fn get_centering_pos(&mut self) -> (f64, f64) {
-        let cx: f64 = self.x + (Node::NORMAL_W - Node::FONT_W * self.name.len() as f64) / 2.0;
-        let cy: f64 = self.y + (Node::NORMAL_H - Node::FONT_H) / 2.0;
-        (cx, cy)
+    pub fn get_center(&self) -> (f64, f64) {
+        (self.x + Node::NORMAL_W / 2.0, self.y + Node::NORMAL_H / 2.0)
+    }
+
+    fn get_text_draw_pos(&mut self) -> (f64, f64) {
+        let tx: f64 = self.x + (Node::NORMAL_W - Node::FONT_W * self.name.len() as f64) / 2.0;
+        let ty: f64 = self.y + (Node::NORMAL_H - Node::FONT_H) / 2.0;
+        (tx, ty)
     }
 
     pub fn draw(&mut self, pyxel: &mut Pyxel) {
         pyxel.elli(self.x, self.y, Node::NORMAL_W, Node::NORMAL_H, pyxel::COLOR_RED);
         pyxel.ellib(self.x, self.y, Node::NORMAL_W, Node::NORMAL_H, pyxel::COLOR_WHITE);
-        let (cx, cy) = self.get_centering_pos();
-        pyxel.text(cx, cy, &self.name, 10, None);
+        let (tx, ty) = self.get_text_draw_pos();
+        pyxel.text(tx, ty, &self.name, 10, None);
     }
 
 }
@@ -93,30 +98,37 @@ impl NodeManager {
     pub fn update(&mut self, pyxel: &mut Pyxel) {
     }
 
-    // fn get_centering_pos(&mut self) -> (f64, f64) {
-    //     let cx: f64 = self.x + (Node::NORMAL_W - Node::FONT_W * self.name.len() as f64) / 2.0;
-    //     let cy: f64 = self.y + (Node::NORMAL_H - Node::FONT_H) / 2.0;
-    //     (cx, cy)
-    // }
-
     pub fn draw(&mut self, pyxel: &mut Pyxel) {
 
         let mut dfs = Dfs::new(&self.graph, NodeIndex::new(0));
         while let Some(nx) = dfs.next(&self.graph) {
-            // println!("{:?}, {:?}", nx, self.graph[nx].name);
             // println!("in:{:?}, out:{:?}", self.graph.edges_directed(nx, Direction::Incoming).count(), self.graph.edges_directed(nx, Direction::Outgoing).count());
             // println!("in:{:?}, out:{:?}", self.graph.neighbors_directed(nx, Direction::Incoming).count(), self.graph.neighbors_directed(nx, Direction::Outgoing).count());
-
-            self.graph[nx].draw(pyxel);
-
-            let mut edges = self.graph.neighbors_directed(nx, Direction::Outgoing).detach();
+        
+            /*let mut edges = self.graph.neighbors_directed(nx, Direction::Outgoing).detach();
             //print!("{}", edges.count());
-            // while let Some(edge) = edges.next_edge(&self.graph) {
-            //     print!("-- {:?}", edge);
-            // }
+            while let Some(edge) = edges.next_edge(&self.graph) {
+                //print!("-- {:?}", edge);
+                let t_nx = self.graph[edge].target();
+                // self.draw_edge(nx, t_nx, pyxel);
+            }*/
+
+            for edge in self.graph.edges(nx) {
+                let t_nx = edge.target();
+                self.draw_edge(nx, t_nx, pyxel);
+            }
             // println!(" ");
             dfs.stack.push(nx);
+
+            self.graph[nx].draw(pyxel);
         }
+    }
+
+    fn draw_edge(&self, src_nx: NodeIndex, target_nx: NodeIndex, pyxel: &mut Pyxel) {
+        let (sx, sy) = self.graph[src_nx].get_center();
+        let (tx, ty) = self.graph[target_nx].get_center();
+
+        pyxel.line(sx,sy,tx,ty,pyxel::COLOR_WHITE);
     }
 
 }
@@ -156,10 +168,8 @@ impl App {
         nodeManager.add_edge(3, 4);
         nodeManager.add_edge(3, 5);
         nodeManager.add_edge(5, 6);
-        nodeManager.add_edge(6, 8);
+        nodeManager.add_edge(2, 8);
         nodeManager.add_edge(6, 9);
-
-        //let node = Node::New("name1".to_string(), 10.0, 20.0);
 
         let app = App { x: 0.0, y: 0.0, nodeManager: nodeManager };
         pyxel.run(app);
@@ -183,12 +193,6 @@ impl PyxelCallback for App {
 
     fn draw(&mut self, pyxel: &mut Pyxel) {
         pyxel.cls(3);
-        // pyxel.pset(self.x, 20.0, 7);
-        // pyxel.rect(self.x + 10.0, 25.0, 15.0, 10.0, 8);
-        // pyxel.rectb(self.x + 15.0, 45.0, 15.0, 10.0, pyxel::COLOR_WHITE);
-
-        // pyxel.blt(0.0, 0.0, 0, 0.0, 0.0, 8.0, 8.0, None, Some(30.0), Some(1.5));
-
         self.nodeManager.draw(pyxel);
     }
 }
