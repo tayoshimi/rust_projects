@@ -3,6 +3,10 @@ use pyxel::{Pyxel, PyxelCallback};
 mod node_manager;
 use node_manager::{Node, NodeManager};
 
+mod setup_layout;
+use setup_layout::SetupTreeLayout;
+
+
 pub struct App {
     x: f64,
     y: f64,
@@ -40,6 +44,8 @@ impl App {
         nodeManager.add_edge(2, 8);
         nodeManager.add_edge(6, 9);
 
+        setup_layout::SetupTreeLayout(&nodeManager);
+
         let app = App { x: 0.0, y: 0.0, nodeManager: nodeManager };
         pyxel.run(app);
     }
@@ -58,6 +64,7 @@ impl PyxelCallback for App {
         if pyxel.btnp(pyxel::KEY_Q, None, None) {
             pyxel.quit();
         }
+        self.nodeManager.update(pyxel);
     }
 
     fn draw(&mut self, pyxel: &mut Pyxel) {
