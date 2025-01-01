@@ -30,7 +30,7 @@ impl App {
 
         let mut nodeManager = NodeManager::new(400.0, 350.0);
 
-        for i in 0..10 {
+        for i in 0..12 {
             let name = format!("node {i}");
             nodeManager.add_node(&name);
         }
@@ -43,6 +43,9 @@ impl App {
         nodeManager.add_edge(5, 6);
         nodeManager.add_edge(2, 8);
         nodeManager.add_edge(6, 9);
+
+        nodeManager.add_edge(7, 0);
+        nodeManager.add_edge(10, 11);
 
         setup_layout::SetupTreeLayout(&nodeManager);
 

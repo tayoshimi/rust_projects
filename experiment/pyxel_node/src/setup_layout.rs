@@ -18,7 +18,7 @@ fn calcDistance(x1: f64, y1: f64, x2: f64, y2: f64) -> f64 {
 pub fn SetupTreeLayout(nodeManager: &NodeManager) {
     let mut bfs = Bfs::new(&nodeManager.graph, NodeIndex::new(0));
     while let Some(nx) = bfs.next(&nodeManager.graph) {
-        println!("{:?}", nx);
+        //println!("{:?}", nx);
         for (i, edge) in nodeManager.graph.edges_directed(nx, Direction::Outgoing).enumerate() {
             let t_nx = edge.target();
         }
