@@ -44,6 +44,11 @@ impl Node {
     pub fn update(&mut self, pyxel: &mut Pyxel) {
     }
 
+    pub fn move_pos(&mut self, vx: f64, vy: f64) {
+        self.x = self.x + vx;
+        self.y = self.y + vy;
+    }
+
     pub fn get_center(&self) -> (f64, f64) {
         (self.x + Node::NORMAL_W / 2.0, self.y + Node::NORMAL_H / 2.0)
     }
@@ -67,6 +72,7 @@ pub struct NodeManager {
     pub graph: Graph::<Node,(),petgraph::Directed>,
     world_w: f64,
     world_h: f64,
+    count: i64,
 }
 
 impl NodeManager {
@@ -79,15 +85,20 @@ impl NodeManager {
             NodeManager {
                 graph: graph,
                 world_w: world_w,
-                world_h: world_h
+                world_h: world_h,
+                count: 0,
             }
 
     }
 
     pub fn add_node(&mut self, name: &str) -> NodeIndex {
         let idx = self.graph.add_node(Node::new(name, 10.0, 10.0));
-        self.graph[idx].x = 10.0 + (Node::NORMAL_W + Self::NODE_SPACE) * (idx.index() as f64 % 5.0);
+        // self.graph[idx].x = 10.0 + (Node::NORMAL_W + Self::NODE_SPACE) * (idx.index() as f64 % 5.0);
+        // self.graph[idx].y = 10.0 + (Node::NORMAL_H + Self::NODE_SPACE) * (idx.index() as f64 / 5.0);
+        self.graph[idx].x = (self.world_w - Node::NORMAL_W) / 2.0 + (Node::NORMAL_W + Self::NODE_SPACE) * (1 - (self.count % 2) * 2) as f64;
         self.graph[idx].y = 10.0 + (Node::NORMAL_H + Self::NODE_SPACE) * (idx.index() as f64 / 5.0);
+        
+        self.count = self.count + 1;
         idx
     }
 
@@ -99,7 +110,6 @@ impl NodeManager {
     }
 
     pub fn draw(&mut self, pyxel: &mut Pyxel) {
-
         let mut dfs = Dfs::new(&self.graph, NodeIndex::new(0));
         while let Some(nx) = dfs.next(&self.graph) {
             for edge in self.graph.edges_directed(nx, Direction::Outgoing) {
@@ -107,6 +117,9 @@ impl NodeManager {
                 self.draw_edge(nx, t_nx, pyxel);
             }
             dfs.stack.push(nx);
+            for edge in self.graph.edges_directed(nx, Direction::Incoming) {
+                dfs.stack.push(edge.source());
+            }
 
             self.graph[nx].draw(pyxel);
         }
