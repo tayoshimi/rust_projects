@@ -11,19 +11,39 @@ use petgraph::prelude::Dfs;
 use petgraph::prelude::Bfs;
 use petgraph::visit::EdgeRef;
 
+use std::collections::HashMap;
+
 fn calcDistance(x1: f64, y1: f64, x2: f64, y2: f64) -> f64 {
     (x2*x2+y2*y2) - (x1*x1+y1*y1)
 }
 
-pub fn SetupTreeLayout(nodeManager: &NodeManager) {
-    let mut bfs = Bfs::new(&nodeManager.graph, NodeIndex::new(0));
-    while let Some(nx) = bfs.next(&nodeManager.graph) {
-        //println!("{:?}", nx);
-        for (i, edge) in nodeManager.graph.edges_directed(nx, Direction::Outgoing).enumerate() {
-            let t_nx = edge.target();
-        }
+pub fn SetupTreeLayout(nodeManager: &mut NodeManager) {
+    let root_nx = NodeIndex::new(0);
+    nodeManager.graph[root_nx].depth = 0;
 
+    // 深さを設定
+    let mut max_depth = 0;
+    let mut dfs = Dfs::new(&nodeManager.graph, root_nx);
+    while let Some(nx) = dfs.next(&nodeManager.graph) {
+        if let Some(parent_index) = nodeManager.graph.neighbors_directed(nx, Direction::Incoming).next() {
+            let depth = nodeManager.graph[parent_index].depth + 1;
+            nodeManager.graph[nx].depth = depth;
+            if max_depth < depth {
+                max_depth = depth;
+            }
+        }
+        dfs.stack.push(nx);
     }
+
+    for i in 0..max_depth {
+        nodeManager.graph.node_indices()
+        .filter(|nx| nodeManager.graph[nx].depth == i)
+        .for_each(|fnx| {
+            
+        });
+    }
+
+
 }
 
 /*

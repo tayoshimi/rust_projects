@@ -14,3 +14,7 @@ path = "src/sandbox.rs"
 [[example]]
 name = "sinwave"
 path = "src/sinwave.rs"
+
+[[example]]
+name = "firework"
+path = "src/firework.rs"

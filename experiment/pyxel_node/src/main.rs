@@ -47,7 +47,7 @@ impl App {
         nodeManager.add_edge(7, 0);
         nodeManager.add_edge(10, 11);
 
-        setup_layout::SetupTreeLayout(&nodeManager);
+        setup_layout::SetupTreeLayout(&mut nodeManager);
 
         let app = App { x: 0.0, y: 0.0, nodeManager: nodeManager };
         pyxel.run(app);

@@ -25,6 +25,7 @@ pub struct Node {
     name: String,
     x: f64,
     y: f64,
+    pub depth: u32,
 }
 
 impl Node {
@@ -36,7 +37,7 @@ impl Node {
     pub fn new(name: &str,
         x: f64,
         y: f64) -> Node {
-            Node {name: name.to_string(), x: x, y: y
+            Node {name: name.to_string(), x: x, y: y, depth: 0
             }
 
     }
@@ -63,7 +64,9 @@ impl Node {
         pyxel.elli(self.x, self.y, Node::NORMAL_W, Node::NORMAL_H, pyxel::COLOR_RED);
         pyxel.ellib(self.x, self.y, Node::NORMAL_W, Node::NORMAL_H, pyxel::COLOR_WHITE);
         let (tx, ty) = self.get_text_draw_pos();
-        pyxel.text(tx, ty, &self.name, 10, None);
+        //pyxel.text(tx, ty, &self.name, 10, None);
+        pyxel.text(tx, ty, &self.depth.to_string(), 10, None);
+
     }
 
 }
@@ -88,7 +91,6 @@ impl NodeManager {
                 world_h: world_h,
                 count: 0,
             }
-
     }
 
     pub fn add_node(&mut self, name: &str) -> NodeIndex {
