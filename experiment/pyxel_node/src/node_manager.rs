@@ -25,14 +25,14 @@ pub struct Node {
     name: String,
     x: f64,
     y: f64,
-    pub depth: u32,
+    pub depth: usize,
 }
 
 impl Node {
-    const NORMAL_W:f64 = 40.0;
-    const NORMAL_H:f64 = 18.0;
-    const FONT_W:f64 = 4.0;
-    const FONT_H:f64 = 8.0;
+    pub const NORMAL_W:f64 = 40.0;
+    pub const NORMAL_H:f64 = 18.0;
+    pub const FONT_W:f64 = 4.0;
+    pub const FONT_H:f64 = 8.0;
 
     pub fn new(name: &str,
         x: f64,
@@ -43,6 +43,11 @@ impl Node {
     }
 
     pub fn update(&mut self, pyxel: &mut Pyxel) {
+    }
+
+    pub fn set_pos(&mut self, x: f64, y: f64) {
+        self.x = x;
+        self.y = y;
     }
 
     pub fn move_pos(&mut self, vx: f64, vy: f64) {
@@ -64,8 +69,8 @@ impl Node {
         pyxel.elli(self.x, self.y, Node::NORMAL_W, Node::NORMAL_H, pyxel::COLOR_RED);
         pyxel.ellib(self.x, self.y, Node::NORMAL_W, Node::NORMAL_H, pyxel::COLOR_WHITE);
         let (tx, ty) = self.get_text_draw_pos();
-        //pyxel.text(tx, ty, &self.name, 10, None);
-        pyxel.text(tx, ty, &self.depth.to_string(), 10, None);
+        pyxel.text(tx, ty, &self.name, 10, None);
+        //pyxel.text(tx, ty, &self.depth.to_string(), 10, None);
 
     }
 
@@ -73,13 +78,13 @@ impl Node {
 
 pub struct NodeManager {
     pub graph: Graph::<Node,(),petgraph::Directed>,
-    world_w: f64,
-    world_h: f64,
+    pub world_w: f64,
+    pub world_h: f64,
     count: i64,
 }
 
 impl NodeManager {
-    const NODE_SPACE:f64 = 20.0;
+    pub const NODE_SPACE:f64 = 20.0;
 
     pub fn new(
         world_w: f64,

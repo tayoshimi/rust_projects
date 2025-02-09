@@ -22,7 +22,7 @@ pub fn SetupTreeLayout(nodeManager: &mut NodeManager) {
     nodeManager.graph[root_nx].depth = 0;
 
     // 深さを設定
-    let mut max_depth = 0;
+    let mut max_depth: usize = 0;
     let mut dfs = Dfs::new(&nodeManager.graph, root_nx);
     while let Some(nx) = dfs.next(&nodeManager.graph) {
         if let Some(parent_index) = nodeManager.graph.neighbors_directed(nx, Direction::Incoming).next() {
@@ -31,29 +31,31 @@ pub fn SetupTreeLayout(nodeManager: &mut NodeManager) {
             if max_depth < depth {
                 max_depth = depth;
             }
+            println!("{}, {:?}, {:?}", depth, nx, parent_index);
         }
         dfs.stack.push(nx);
     }
 
-    for i in 0..max_depth {
-        let nxs = nodeManager.graph.node_indices()
-        .filter(|nx| nodeManager.graph[*nx].depth == i);
+    for i in 0..=max_depth {
+        let nxs: Vec<_> = nodeManager.graph.node_indices()
+        .filter(|nx| nodeManager.graph[*nx].depth == i).collect();
 
-        for (j, j_nx) in nxs.enumerate() {
+        for (j, j_nx) in nxs.into_iter().enumerate() {
             println!("{}, {}, {:?}", i, j, j_nx);
+            let (x, y) = calc_pos(nodeManager, i, j);
+
+            let node = &mut nodeManager.graph[j_nx];
+            node.set_pos(x, y);
         }
     }
 
 
 }
 
-fn calc_x(nodeManager: &NodeManager, num: u32) -> f64 {
-    let x = (self.world_w - Node::NORMAL_W) / 2.0 + (Node::NORMAL_W + Self::NODE_SPACE) * (1 - (self.count % 2) * 2) as f64;
-     
-}
-
-fn calc_y(nodeManager: &NodeManager, num: u32) -> f64 {
-    let y = 10.0 + (Node::NORMAL_H + Self::NODE_SPACE) * (idx.index() as f64 / 5.0);
+fn calc_pos(nodeManager: &NodeManager, depth: usize, idx: usize) -> (f64, f64) {
+    let x = nodeManager.world_w / 2.0 - (Node::NORMAL_W + NodeManager::NODE_SPACE) * (depth) as f64 + (Node::NORMAL_W + NodeManager::NODE_SPACE) * idx as f64;
+    let y = 10.0 + (Node::NORMAL_H + NodeManager::NODE_SPACE) * (depth as f64);
+    (x, y)
 }
 
 
