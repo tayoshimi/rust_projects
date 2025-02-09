@@ -36,15 +36,26 @@ pub fn SetupTreeLayout(nodeManager: &mut NodeManager) {
     }
 
     for i in 0..max_depth {
-        nodeManager.graph.node_indices()
-        .filter(|nx| nodeManager.graph[nx].depth == i)
-        .for_each(|fnx| {
-            
-        });
+        let nxs = nodeManager.graph.node_indices()
+        .filter(|nx| nodeManager.graph[*nx].depth == i);
+
+        for (j, j_nx) in nxs.enumerate() {
+            println!("{}, {}, {:?}", i, j, j_nx);
+        }
     }
 
 
 }
+
+fn calc_x(nodeManager: &NodeManager, num: u32) -> f64 {
+    let x = (self.world_w - Node::NORMAL_W) / 2.0 + (Node::NORMAL_W + Self::NODE_SPACE) * (1 - (self.count % 2) * 2) as f64;
+     
+}
+
+fn calc_y(nodeManager: &NodeManager, num: u32) -> f64 {
+    let y = 10.0 + (Node::NORMAL_H + Self::NODE_SPACE) * (idx.index() as f64 / 5.0);
+}
+
 
 /*
 pub fn GravityPower(graph: Graph::<Node,(),petgraph::Directed>, power: f64) {
