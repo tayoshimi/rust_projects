@@ -58,3 +58,19 @@ sudo pacman -S sdl2
 ./pyxel/rust/pyxel-platform/wrapper.h
 #include <SDL.h> -> #include <SDL2/SDL.h>
 ```
+
+### クロスコンパイル関連
+
+#### windows
+
+'''sh
+rustup target add x86_64-pc-windows-gnu
+cargo build --target x86_64-pc-windows-gnu --release
+'''
+
+#### mac(ビルド失敗する)
+
+```sh
+rustup target add aarch64-apple-darwin
+cargo build --target aarch64-apple-darwin --release
+```
