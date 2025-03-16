@@ -1,11 +1,13 @@
 use pyxel::{Pyxel, PyxelCallback};
+use std::iter;
 
-
+#[derive(Clone)]
 pub struct Node {
     //name: String,
-    x: f64,
-    y: f64,
+    x: i32,
+    y: i32,
     color: u8,
+    alive: bool,
     //pub depth: usize,
 }
 
@@ -15,10 +17,11 @@ impl Node {
     pub const FONT_W:f64 = 4.0;
     pub const FONT_H:f64 = 8.0;
 
-    pub fn new(x: f64,
-               y: f64) -> Node {
+    pub fn new(x: i32,
+               y: i32) -> Node {
                    Node {
-                       x: x, y: y, color: pyxel::COLOR_RED
+                       x: x, y: y, color: pyxel::COLOR_RED,
+                       alive: false,
                    }
 
                }
@@ -26,18 +29,18 @@ impl Node {
                pub fn update(&mut self, pyxel: &mut Pyxel) {
                }
 
-               pub fn set_pos(&mut self, x: f64, y: f64) {
+               pub fn set_pos(&mut self, x: i32, y: i32) {
                    self.x = x;
                    self.y = y;
                }
 
-               pub fn move_pos(&mut self, vx: f64, vy: f64) {
+               pub fn move_pos(&mut self, vx: i32, vy: i32) {
                    self.x = self.x + vx;
                    self.y = self.y + vy;
                }
 
-               pub fn get_center(&self) -> (f64, f64) {
-                   (self.x + Node::NORMAL_W / 2.0, self.y + Node::NORMAL_H / 2.0)
+               pub fn get_center(&self) -> (i32, i32) {
+                   (self.x + (Node::NORMAL_W / 2.0) as i32, self.y + (Node::NORMAL_H / 2.0) as i32)
                }
 
                /*fn get_text_draw_pos(&mut self) -> (f64, f64) {
@@ -47,8 +50,8 @@ impl Node {
                }*/
 
                pub fn draw(&mut self, pyxel: &mut Pyxel) {
-                   pyxel.elli(self.x, self.y, Node::NORMAL_W, Node::NORMAL_H, self.color);
-                   pyxel.ellib(self.x, self.y, Node::NORMAL_W, Node::NORMAL_H, pyxel::COLOR_WHITE);
+                   pyxel.elli(self.x as f64, self.y as f64, Node::NORMAL_W, Node::NORMAL_H, self.color);
+                   pyxel.ellib(self.x as f64, self.y as f64, Node::NORMAL_W, Node::NORMAL_H, pyxel::COLOR_WHITE);
                    //let (tx, ty) = self.get_text_draw_pos();
                    //pyxel.text(tx, ty, &self.name, 10, None);
                    //pyxel.text(tx, ty, &self.depth.to_string(), 10, None);
@@ -58,36 +61,46 @@ impl Node {
 }
 
 pub struct NodeManager {
-    pub pool: Vec<Node>,
-    pub world_w: f64,
-    pub world_h: f64,
-    count: i64,
+    pool: Vec<Node>,
+    pub world_w: i32,
+    pub world_h: i32,
 }
 
 impl NodeManager {
     pub fn new(
-        world_w: f64,
-        world_h: f64) -> NodeManager {
-            let pool = Vec::new();
+        world_w: i32,
+        world_h: i32,
+        pool_size: usize) -> NodeManager {
+            let initial_node = Node::new(0, 0); 
+            let vec: Vec<Node> = iter::repeat(initial_node)
+                .take(pool_size)
+                .map(|v| v.clone())
+                .collect();
+
             NodeManager {
-                pool: pool,
+                pool: vec,
                 world_w: world_w,
                 world_h: world_h,
-                count: 0,
             }
         }
 
-        pub fn add_node(&mut self, x: i32, y: i32) {
-            self.pool.push(Node::new(x as f64, y as f64));
+        pub fn rise_node(&mut self, x: i32, y: i32) {
+            if let Some(node) = self.pool.iter_mut().find(|node| node.alive == false) {
+                node.set_pos(x, y);
+                node.alive = true;
+                println!("pool:{}", self.pool.len());
+            } else {
+                eprintln!("err");
+            }
         }
 
         pub fn update(&mut self, pyxel: &mut Pyxel) {
         }
 
         pub fn draw(&mut self, pyxel: &mut Pyxel) {
-            for mut p in &mut self.pool {
-                p.draw(pyxel);
-            }
+            // for mut p in &mut self.pool {
+            //     p.draw(pyxel);
+            // }
         }
 
 }
@@ -120,10 +133,10 @@ impl App {
         pyxel.warp_mouse(10.0, 10.0);
 
 
-        let mut nodeMan = NodeManager::new(w as f64, h as f64);
-        nodeMan.add_node(50, 40);
+        let mut node_man = NodeManager::new(w as i32, h as i32, 100);
+        node_man.rise_node(50, 40);
 
-        let app = App { w: w, h: h, node_man: nodeMan };
+        let app = App { w: w, h: h, node_man: node_man };
         pyxel.run(app);
     }
 }
@@ -143,7 +156,7 @@ impl PyxelCallback for App {
             let x = pyxel.mouse_x;
             let y = pyxel.mouse_y;
 
-            self.node_man.add_node(x, y);
+            self.node_man.rise_node(x, y);
         }
     }
 
