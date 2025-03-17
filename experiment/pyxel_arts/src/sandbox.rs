@@ -8,11 +8,12 @@ pub struct Node {
     y: i32,
     color: u8,
     alive: bool,
+    life: u32,
     //pub depth: usize,
 }
 
 impl Node {
-    pub const NORMAL_W:f64 = 12.0;
+    pub const NORMAL_W:f64 = 10.0;
     pub const NORMAL_H:f64 = 10.0;
     pub const FONT_W:f64 = 4.0;
     pub const FONT_H:f64 = 8.0;
@@ -22,16 +23,22 @@ impl Node {
                    Node {
                        x: x, y: y, color: pyxel::COLOR_RED,
                        alive: false,
+                       life: 0,
                    }
 
+               }
+
+               pub fn rise(&mut self, pyxel: &mut Pyxel) {
+                self.color = pyxel.rndi(8,10) as u8;
+                self.alive = true;
                }
 
                pub fn update(&mut self, pyxel: &mut Pyxel) {
                }
 
                pub fn set_pos(&mut self, x: i32, y: i32) {
-                   self.x = x;
-                   self.y = y;
+                   self.x = x - (Node::NORMAL_W / 2.0) as i32;
+                   self.y = y - (Node::NORMAL_H / 2.0) as i32;
                }
 
                pub fn move_pos(&mut self, vx: i32, vy: i32) {
@@ -84,10 +91,10 @@ impl NodeManager {
             }
         }
 
-        pub fn rise_node(&mut self, x: i32, y: i32) {
+        pub fn rise_node(&mut self, x: i32, y: i32, pyxel: &mut Pyxel) {
             if let Some(node) = self.pool.iter_mut().find(|node| node.alive == false) {
                 node.set_pos(x, y);
-                node.alive = true;
+                node.rise(pyxel);
                 println!("pool:{}", self.pool.len());
             } else {
                 eprintln!("err");
@@ -95,12 +102,15 @@ impl NodeManager {
         }
 
         pub fn update(&mut self, pyxel: &mut Pyxel) {
+            self.pool.iter_mut().filter(|p| p.alive).for_each(|node| {
+                node.update(pyxel);
+            });
         }
 
         pub fn draw(&mut self, pyxel: &mut Pyxel) {
-            // for mut p in &mut self.pool {
-            //     p.draw(pyxel);
-            // }
+            self.pool.iter_mut().filter(|p| p.alive).for_each(|node| {
+                node.draw(pyxel);
+            });
         }
 
 }
@@ -134,7 +144,7 @@ impl App {
 
 
         let mut node_man = NodeManager::new(w as i32, h as i32, 100);
-        node_man.rise_node(50, 40);
+        node_man.rise_node(50, 40, &mut pyxel);
 
         let app = App { w: w, h: h, node_man: node_man };
         pyxel.run(app);
@@ -156,8 +166,10 @@ impl PyxelCallback for App {
             let x = pyxel.mouse_x;
             let y = pyxel.mouse_y;
 
-            self.node_man.rise_node(x, y);
+            self.node_man.rise_node(x, y, pyxel);
         }
+
+        self.node_man.draw(pyxel);
     }
 
     fn draw(&mut self, pyxel: &mut Pyxel) {
