@@ -3,13 +3,11 @@ use std::iter;
 
 #[derive(Clone)]
 pub struct Node {
-    //name: String,
     x: i32,
     y: i32,
     color: u8,
     alive: bool,
     life: u32,
-    //pub depth: usize,
 }
 
 impl Node {
@@ -25,7 +23,6 @@ impl Node {
                        alive: false,
                        life: 0,
                    }
-
                }
 
                pub fn rise(&mut self, pyxel: &mut Pyxel) {
@@ -50,21 +47,10 @@ impl Node {
                    (self.x + (Node::NORMAL_W / 2.0) as i32, self.y + (Node::NORMAL_H / 2.0) as i32)
                }
 
-               /*fn get_text_draw_pos(&mut self) -> (f64, f64) {
-                   let tx: f64 = self.x + (Node::NORMAL_W - Node::FONT_W * self.name.len() as f64) / 2.0;
-                   let ty: f64 = self.y + (Node::NORMAL_H - Node::FONT_H) / 2.0;
-                   (tx, ty)
-               }*/
-
                pub fn draw(&mut self, pyxel: &mut Pyxel) {
                    pyxel.elli(self.x as f64, self.y as f64, Node::NORMAL_W, Node::NORMAL_H, self.color);
                    pyxel.ellib(self.x as f64, self.y as f64, Node::NORMAL_W, Node::NORMAL_H, pyxel::COLOR_WHITE);
-                   //let (tx, ty) = self.get_text_draw_pos();
-                   //pyxel.text(tx, ty, &self.name, 10, None);
-                   //pyxel.text(tx, ty, &self.depth.to_string(), 10, None);
-
                }
-
 }
 
 pub struct NodeManager {
@@ -112,7 +98,6 @@ impl NodeManager {
                 node.draw(pyxel);
             });
         }
-
 }
 
 
