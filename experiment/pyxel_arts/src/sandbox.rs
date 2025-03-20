@@ -81,7 +81,6 @@ impl NodeManager {
             if let Some(node) = self.pool.iter_mut().find(|node| node.alive == false) {
                 node.set_pos(x, y);
                 node.rise(pyxel);
-                println!("pool:{}", self.pool.len());
             } else {
                 eprintln!("err");
             }

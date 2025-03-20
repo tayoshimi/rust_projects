@@ -3,8 +3,8 @@ use std::iter;
 
 #[derive(Clone)]
 struct Particle {
-    x: i32,
-    y: i32,
+    x: f64,
+    y: f64,
     vx: f64,
     vy: f64,
     color: u8,
@@ -17,8 +17,8 @@ struct Particle {
 impl Particle {
     fn new() -> Self {
         Particle {
-            x: 0,
-            y: 0,
+            x: 0.0,
+            y: 0.0,
             vx: 0.0,
             vy: 0.0,
             color: 0,
@@ -36,14 +36,14 @@ impl Particle {
         if self.timer > 60 {
             self.alive = false;
         }
-        self.x = self.x + self.vx as i32;
-        self.y = self.y + self.vy as i32;
+        self.x = self.x + self.vx;
+        self.y = self.y + self.vy;
     }
 
     fn draw(&self, pyxel: &mut Pyxel) {
         //screen.set_color();
         //pyxel.pset(self.x as f64, self.y as f64, self.vx * 2.0, self.vy * 2.0);
-        pyxel.pset(self.x as f64, self.y as f64, self.color);
+        pyxel.pset(self.x, self.y, self.color);
     }
 
     // def setSpeed(&self, deg: int, speed: float) {
@@ -71,8 +71,8 @@ impl Firework {
  
         //self.particles.push(particle);
         if let Some(particle) = self.particles.iter_mut().find(|particle| particle.alive == false) {
-            particle.x = x;
-            particle.y = y;
+            particle.x = x as f64;
+            particle.y = y as f64;
             particle.color = color;
             particle.speed = speed;
             particle.deg = deg;
@@ -87,8 +87,8 @@ impl Firework {
 
     fn add_fires(&mut self, x: i32, y: i32, pyxel: &mut Pyxel) {
         for i in 0..32 {
-            let deg = pyxel.rndf(0.0, 360.0);
-            let speed = 0.1 + pyxel.rndf(0.0, 1.0) * 1.5;
+            let deg = pyxel.rndi(0, 360) as f64;
+            let speed = 0.1 + pyxel.rndf(0.1, 1.0) * 1.5;
             let color =pyxel.rndi(8,10) as u8;
             self.add_particle(x, y, deg, speed, color, pyxel);
         }
@@ -99,18 +99,6 @@ impl Firework {
             particle.update(pyxel);
         });
     }
-
-    // fn cleanup(&mut self) {
-    //     let mut new_particles: Vec<Particle> = Vec::new();
-    //     for particle in &self.particles {
-    //         if let Some(particle) = particle {
-    //             if particle.alive {
-    //                 new_particles.push(*particle);
-    //             }
-    //         }
-    //     }
-    //     self.particles = new_particles;
-    // }
 
     fn draw(&mut self, pyxel: &mut Pyxel) {
         self.particles.iter_mut().filter(|p| p.alive).for_each(|particle| {
@@ -144,7 +132,7 @@ impl App {
         pyxel.warp_mouse(10.0, 10.0);
 
 
-        let mut firework = Firework::new(100);
+        let mut firework = Firework::new(200);
 
         let app = App { w: w, h: h, firework: firework };
         pyxel.run(app);
@@ -183,95 +171,3 @@ impl PyxelCallback for App {
 pub fn main() {
     App::init();
 }
-
-
-// struct ParticleAppTest {
-//     manager: GameObjectManager,
-// }
-
-// impl ParticleAppTest {
-//     pub fn new() -> Self {
-//         ParticleAppTest {
-//             manager: GameObjectManager::new(256, &Particle::new()),
-//         }
-//     }
-
-//     fn run(&mut self) {
-//         if pyxel::button_check(pyxel::KEY_Q) {
-//             pyxel::quit();
-//         }
-
-//         if pyxel::mouse_check_left() {
-//             for i in 0..32 {
-//                 let deg = rand::random::<f32>() * std::f32::consts::PI;
-//                 let speed = 0.1 + rand::random::<f32>() * 1.5;
-//                 let color = match pyxel::COLOR.White {
-//                     _ => pyxel::COLOR_Red,
-//                 };
-//                 ParticleAppTest::_add_particle(&mut self._manager, pyxel::mouse_x as u16, pyxel::mouse_y as u16, deg, speed, color);
-//             }
-//         }
-
-//         self._manager.update();
-//         self._manager.cleanup();
-
-//         draw();
-//     }
-
-//     fn draw(&mut self) {
-//         pyxel::cls(0);
-//         self._manager.draw();
-//         pyxel::text(4, pyxel::height - 16, format!("particle: {}", self._manager.particles.len()), pyxel::COLOR_White);
-//     }
-
-//     fn _add_particle(&mut self, x: u16, y: u16, deg: f32, speed: f32, color: u16) {
-//         let mut particle = Particle::new();
-//         particle.x = x;
-//         particle.y = y;
-//         particle.vx = speed * Pyxel:PI / 180.0 * deg;
-//         particle.vy = 0.0;
-//         particle.speed = speed;
-//         particle.timer = 0;
-//         self._manager.add_particle(x, y, deg, speed, color);
-//     }
-// }
-
-
-/*
-struct Explosion {
-    fn init() {
-        ParticleManager = GameObjectManager(256, Particle::new());
-    }
-}
-
-impl Explosion {
-    fn explode(&self, x: u16, y: u16) {
-        for _ in 0..32 {
-            let deg = rand::random::<f64>() * 360.0;
-            let speed = 0.1 + rand::random::<f64>() * 1.5;
-            let color = match random::random::<u8>() % 3 {
-                0 => pyxel::COLOR_WHITE,
-                1 => pyxel::COLOR_RED,
-                2 => pyxel::COLOR_YELLOW,
-                _ => panic!("Invalid random value"),
-            };
-            ParticleManager.add(x, y, deg, speed as f32, color);
-        }
-    }
-
-    fn update(&self) {
-        ParticleManager.update();
-    }
-
-    fn cleanup(&self) {
-        ParticleManager.cleanup();
-    }
-
-    fn draw(&self) {
-        ParticleManager.draw();
-    }
-
-    fn num(&self) -> u16 {
-        ParticleManager.list.len() as u16
-    }
-}*/
