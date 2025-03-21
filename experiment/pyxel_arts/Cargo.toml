@@ -18,3 +18,7 @@ path = "src/sinwave.rs"
 [[example]]
 name = "firework"
 path = "src/firework.rs"
+
+[[example]]
+name = "boid_fish"
+path = "src/boid_fish.rs"
