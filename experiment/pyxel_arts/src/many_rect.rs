@@ -1,25 +1,28 @@
 use pyxel::{Pyxel, PyxelCallback};
 use std::iter;
+use std::time::Instant;
 
 const WIDTH: u32 = 256;
 const HEIGHT: u32 = 192;
-const FISH_COUNT: usize = 300;
+const OBJECT_COUNT: usize = 300;
 
 #[derive(Clone)]
-struct Fish {
+struct Object {
     x: f64,
     y: f64,
     vx: f64,
     vy: f64,
+    color: u8,
 }
 
-impl Fish {
+impl Object {
     fn new(pyxel: &mut Pyxel) -> Self {
-        Fish {
+        Object {
             x: pyxel.rndf(0.0, WIDTH as f64),
             y: pyxel.rndf(0.0, HEIGHT as f64),
             vx: pyxel.rndf(-1.0, 1.0),
             vy: pyxel.rndf(-1.0, 1.0),
+            color: pyxel.rndi(4, 11) as u8,
         }
     }
 
@@ -40,18 +43,18 @@ impl Fish {
 struct App {
     w: u32,
     h: u32,
-    fishes: Vec<Fish>,
+    objects: Vec<Object>,
+    start_time: Instant, // FPS計算用の開始時間
+    prev_frame_count: u32, // 前回のフレームカウント
+    fps: f64, // 計算されたFPS
 }
 
 
 impl App {
     fn init() {
-        let w = 256;
-        let h = 192;
-
         let mut pyxel = pyxel::init(
-            w,
-            h,
+            WIDTH,
+            HEIGHT,
             Some("Hello, Pyxel in Rust!"),
             None,
             None,
@@ -62,9 +65,13 @@ impl App {
         pyxel.mouse(true);
         pyxel.warp_mouse(10.0, 10.0);
 
-        let fishes = (0..FISH_COUNT).map(|_| Fish::new(&mut pyxel)).collect();
+        let objects = (0..OBJECT_COUNT).map(|_| Object::new(&mut pyxel)).collect();
 
-        let app = App { w: w, h: h, fishes: fishes };
+        let start_time = Instant::now();
+        let prev_frame_count = pyxel.frame_count;
+        let fps = 0.0;
+
+        let app = App { w:WIDTH, h:HEIGHT, objects, start_time, prev_frame_count, fps };
         pyxel.run(app);
     }
 }
@@ -83,19 +90,30 @@ impl PyxelCallback for App {
         if pyxel.btnp(pyxel::MOUSE_BUTTON_LEFT, None, None) {
             let x = pyxel.mouse_x;
             let y = pyxel.mouse_y;
-
-            //self.node_man.rise_node(x, y, pyxel);
         }
 
-        for fish in &mut self.fishes { fish.update(pyxel); }
+        for object in &mut self.objects { object.update(pyxel); }
+
+        // FPSの計算（1秒ごとに更新）
+        let elapsed = self.start_time.elapsed().as_secs_f64();
+        if elapsed >= 1.0 {
+            let frames = pyxel.frame_count - self.prev_frame_count;
+            self.fps = frames as f64 / elapsed;
+            self.start_time = Instant::now();
+            self.prev_frame_count = pyxel.frame_count;
+        }
     }
 
     fn draw(&mut self, pyxel: &mut Pyxel) {
         pyxel.cls(1);
         
-        for fish in &self.fishes {
-            pyxel.rect(fish.x as f64, fish.y as f64, 4.0, 2.0, 7);
+        for object in &self.objects {
+            pyxel.rect(object.x as f64, object.y as f64, 4.0, 2.0, object.color);
         }
+
+        // FPSの表示
+        let fps_text = format!("FPS: {:.2}", self.fps);
+        pyxel.text(self.w as f64 - 50.0, 10.0, &fps_text, 7, None);
     }
 }
 
