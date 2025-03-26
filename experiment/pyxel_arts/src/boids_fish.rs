@@ -2,9 +2,9 @@ use pyxel::{Pyxel, PyxelCallback};
 use std::f64::consts::PI;
 use std::time::Instant;
 
-const WIDTH: u32 = 512;
-const HEIGHT: u32 = 384;
-const FISH_COUNT: usize = 500;
+const WIDTH: u32 = 640;
+const HEIGHT: u32 = 480;
+const FISH_COUNT: usize = 800;
 
 const PERCEPTION_RADIUS: f64 = 10.0; // 知覚半径
 const SEPARATION_WEIGHT: f64 = 2.5;  // 分離の重み

@@ -26,3 +26,7 @@ path = "src/boids_fish.rs"
 [[example]]
 name = "many_rect"
 path = "src/many_rect.rs"
+
+[[example]]
+name = "piano"
+path = "src/piano.rs"
