@@ -42,6 +42,12 @@ warning: build failed, waiting for other jobs to finish...
 sudo pacman -S clang
 ```
 
+Ubuntu
+
+```sh
+ sudo apt install libclang-dev
+```
+
 #### SDL2関連
 
 ```sh
@@ -62,6 +68,12 @@ SDL2の追加と編集
 
 ```sh
 sudo pacman -S sdl2
+```
+
+Ubuntu
+
+```sh
+sudo apt install libsdl2-dev
 ```
 
 ```

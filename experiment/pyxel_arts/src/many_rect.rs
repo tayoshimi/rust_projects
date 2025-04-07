@@ -16,13 +16,13 @@ struct Object {
 }
 
 impl Object {
-    fn new(pyxel: &mut Pyxel) -> Self {
+    fn new() -> Self {
         Object {
-            x: pyxel.rndf(0.0, WIDTH as f64),
-            y: pyxel.rndf(0.0, HEIGHT as f64),
-            vx: pyxel.rndf(-1.0, 1.0),
-            vy: pyxel.rndf(-1.0, 1.0),
-            color: pyxel.rndi(4, 11) as u8,
+            x: Pyxel::rndf(0.0, WIDTH as f64),
+            y: Pyxel::rndf(0.0, HEIGHT as f64),
+            vx: Pyxel::rndf(-1.0, 1.0),
+            vy: Pyxel::rndf(-1.0, 1.0),
+            color: Pyxel::rndi(4, 11) as u8,
         }
     }
 
@@ -33,8 +33,8 @@ impl Object {
         else if self.x > WIDTH as f64 - 4.0 { self.x = WIDTH as f64 - 4.0; self.vx = -self.vx; }
         if self.y < 0.0 { self.y = 0.0; self.vy = -self.vy; }
         else if self.y > HEIGHT as f64 - 4.0 { self.y = HEIGHT as f64 - 4.0; self.vy = -self.vy; }
-        self.vx += pyxel.rndf(-0.1, 0.1);
-        self.vy += pyxel.rndf(-0.1, 0.1);
+        self.vx += Pyxel::rndf(-0.1, 0.1);
+        self.vy += Pyxel::rndf(-0.1, 0.1);
         self.vx = self.vx.clamp(-1.5, 1.5);
         self.vy = self.vy.clamp(-1.5, 1.5);
     }
@@ -65,7 +65,7 @@ impl App {
         pyxel.mouse(true);
         pyxel.warp_mouse(10.0, 10.0);
 
-        let objects = (0..OBJECT_COUNT).map(|_| Object::new(&mut pyxel)).collect();
+        let objects = (0..OBJECT_COUNT).map(|_| Object::new()).collect();
 
         let start_time = Instant::now();
         let prev_frame_count = pyxel.frame_count;

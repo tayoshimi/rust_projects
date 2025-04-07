@@ -23,13 +23,13 @@ struct Fish {
 }
 
 impl Fish {
-    fn new(pyxel: &mut Pyxel) -> Self {
+    fn new() -> Self {
         Fish {
-            x: pyxel.rndf(0.0, WIDTH as f64),
-            y: pyxel.rndf(0.0, HEIGHT as f64),
-            vx: pyxel.rndf(-1.0, 1.0),
-            vy: pyxel.rndf(-1.0, 1.0),
-            color: pyxel.rndi(3,11) as u8,
+            x: Pyxel::rndf(0.0, WIDTH as f64),
+            y: Pyxel::rndf(0.0, HEIGHT as f64),
+            vx: Pyxel::rndf(-1.0, 1.0),
+            vy: Pyxel::rndf(-1.0, 1.0),
+            color: Pyxel::rndi(3,11) as u8,
             perception_radius: PERCEPTION_RADIUS,
         }
     }
@@ -163,7 +163,7 @@ impl App {
         pyxel.mouse(true);
         pyxel.warp_mouse(10.0, 10.0);
 
-        let fishes = (0..FISH_COUNT).map(|_| Fish::new(&mut pyxel)).collect();
+        let fishes = (0..FISH_COUNT).map(|_| Fish::new()).collect();
 
         let start_time = Instant::now();
         let prev_frame_count = pyxel.frame_count;

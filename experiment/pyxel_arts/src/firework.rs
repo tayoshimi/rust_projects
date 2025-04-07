@@ -66,7 +66,7 @@ impl Firework {
         Firework { particles: particles }
     }
 
-    fn add_particle(&mut self, x: i32, y: i32, deg: f64, speed: f64, color: u8, pyxel: &mut Pyxel) {
+    fn add_particle(&mut self, x: i32, y: i32, deg: f64, speed: f64, color: u8) {
         let mut particle = Particle::new();
  
         //self.particles.push(particle);
@@ -76,8 +76,8 @@ impl Firework {
             particle.color = color;
             particle.speed = speed;
             particle.deg = deg;
-            particle.vx = speed * pyxel.cos(deg);
-            particle.vy = speed * -pyxel.sin(deg);
+            particle.vx = speed * Pyxel::cos(deg);
+            particle.vy = speed * -Pyxel::sin(deg);
             particle.timer = 0;
             particle.alive = true;
         } else {
@@ -85,12 +85,12 @@ impl Firework {
         }
     }
 
-    fn add_fires(&mut self, x: i32, y: i32, pyxel: &mut Pyxel) {
+    fn add_fires(&mut self, x: i32, y: i32) {
         for i in 0..32 {
-            let deg = pyxel.rndi(0, 360) as f64;
-            let speed = 0.1 + pyxel.rndf(0.1, 1.0) * 1.5;
-            let color =pyxel.rndi(8,10) as u8;
-            self.add_particle(x, y, deg, speed, color, pyxel);
+            let deg = Pyxel::rndi(0, 360) as f64;
+            let speed = 0.1 + Pyxel::rndf(0.1, 1.0) * 1.5;
+            let color =Pyxel::rndi(8,10) as u8;
+            self.add_particle(x, y, deg, speed, color);
         }
     }
 
@@ -154,7 +154,7 @@ impl PyxelCallback for App {
             let x = pyxel.mouse_x;
             let y = pyxel.mouse_y;
 
-            self.firework.add_fires(x, y, pyxel);
+            self.firework.add_fires(x, y);
         }
 
         self.firework.update(pyxel);
