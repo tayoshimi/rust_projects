@@ -4,4 +4,4 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-pyxel-engine = { path = "pyxel/rust/pyxel-engine", version = "2.2.8" }
+pyxel-engine = { path = "../pyxel/rust/pyxel-engine", version = "2.2.8" }
