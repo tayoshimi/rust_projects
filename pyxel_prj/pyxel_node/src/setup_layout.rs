@@ -6,11 +6,9 @@ use crate::node_manager::{Node, NodeManager};
 use pyxel::Pyxel;
 
 use petgraph;
-use petgraph::Graph;
 use petgraph::Direction;
 use petgraph::graph::NodeIndex;
 use petgraph::prelude::Dfs;
-use petgraph::prelude::Bfs;
 use petgraph::visit::EdgeRef;
 
 use std::collections::HashMap;
@@ -69,17 +67,17 @@ fn calc_distance(x1: f64, y1: f64, x2: f64, y2: f64) -> f64 {
 }
 
 // スプリングレイアウトを設定する関数
-pub fn setup_spring_layout(nodeManager: &mut NodeManager) {
-    let width = nodeManager.world_w;  // ワールドの幅を使用
-    let height = nodeManager.world_h; // ワールドの高さを使用
+pub fn setup_spring_layout(node_manager: &mut NodeManager) {
+    let width = node_manager.world_w;  // ワールドの幅を使用
+    let height = node_manager.world_h; // ワールドの高さを使用
     
     // 理想的なノード間距離 k を計算
-    let k = 0.2 * (width * height / nodeManager.graph.node_count() as f64).sqrt();
+    let k = 0.2 * (width * height / node_manager.graph.node_count() as f64).sqrt();
     let mut temperature = width / 10.0; // 初期温度
     let mut positions: HashMap<NodeIndex, (f64, f64)> = HashMap::new();
 
     // 1. ノードの初期位置をランダムに設定
-    for node in nodeManager.graph.node_indices() {
+    for node in node_manager.graph.node_indices() {
         let x = Pyxel::rndf(0.0, width as f64);
         let y = Pyxel::rndf(0.0, height as f64);
         positions.insert(node, (x, y));
@@ -89,13 +87,13 @@ pub fn setup_spring_layout(nodeManager: &mut NodeManager) {
     for _ in 0..200 {
         // 力を保持するマップを初期化
         let mut disp: HashMap<NodeIndex, (f64, f64)> = HashMap::new();
-        for node in nodeManager.graph.node_indices() {
+        for node in node_manager.graph.node_indices() {
             disp.insert(node, (0.0, 0.0));
         }
 
         // 3. ノード間の反発力を計算
-        for u in nodeManager.graph.node_indices() {
-            for v in nodeManager.graph.node_indices() {
+        for u in node_manager.graph.node_indices() {
+            for v in node_manager.graph.node_indices() {
                 if u != v {
                     let delta_x = positions[&u].0 - positions[&v].0;
                     let delta_y = positions[&u].1 - positions[&v].1;
@@ -110,7 +108,7 @@ pub fn setup_spring_layout(nodeManager: &mut NodeManager) {
         }
 
         // 4. エッジによる引力を計算
-        for edge in nodeManager.graph.edge_references() {
+        for edge in node_manager.graph.edge_references() {
             let u = edge.source();
             let v = edge.target();
             let delta_x = positions[&u].0 - positions[&v].0;
@@ -126,7 +124,7 @@ pub fn setup_spring_layout(nodeManager: &mut NodeManager) {
         }
 
         // 5. ノードの位置を更新
-        for node in nodeManager.graph.node_indices() {
+        for node in node_manager.graph.node_indices() {
             let dx = disp[&node].0;
             let dy = disp[&node].1;
             let disp_length = (dx.powi(2) + dy.powi(2)).sqrt();
@@ -144,8 +142,8 @@ pub fn setup_spring_layout(nodeManager: &mut NodeManager) {
     }
 
     // 7. 最終的な位置をノードに設定
-    for node in nodeManager.graph.node_indices() {
+    for node in node_manager.graph.node_indices() {
         let pos = positions[&node];
-        nodeManager.graph[node].set_pos(pos.0, pos.1);
+        node_manager.graph[node].set_pos(pos.0, pos.1);
     }
 }
