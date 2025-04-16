@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-pyxel-engine = { path = "../pyxel/rust/pyxel-engine", version = "2.3.8" }
+pyxel-engine = { path = "../pyxel/rust/pyxel-engine" }
 petgraph = "0.8.1"
 
 [[example]]
