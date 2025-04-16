@@ -20,10 +20,6 @@ name = "firework"
 path = "src/firework.rs"
 
 [[example]]
-name = "boids_fish"
-path = "src/boids_fish.rs"
-
-[[example]]
 name = "many_rect"
 path = "src/many_rect.rs"
 

@@ -1,0 +1,7 @@
+[package]
+name = "boids_fish"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+pyxel-engine = { path = "../pyxel/rust/pyxel-engine" }
