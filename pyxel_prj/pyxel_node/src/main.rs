@@ -4,7 +4,7 @@ mod node_manager;
 use node_manager::{Node, NodeManager};
 
 mod setup_layout;
-use setup_layout::SetupTreeLayout;
+use setup_layout::{setup_tree_layout, setup_spring_layout};
 
 
 pub struct App {
@@ -13,11 +13,14 @@ pub struct App {
     nodeManager: NodeManager,
 }
 
+const WIDTH: u32 = 640;
+const HEIGHT: u32 = 480;
+
 impl App {
     fn init() {
         let mut pyxel = pyxel::init(
-            400,
-            350,
+            WIDTH,
+            HEIGHT,
             Some("Hello, Pyxel in Rust!"),
             None,
             None,
@@ -28,9 +31,9 @@ impl App {
         pyxel.mouse(true);
         pyxel.warp_mouse(10.0, 10.0);
 
-        let mut nodeManager = NodeManager::new(400.0, 350.0);
+        let mut nodeManager = NodeManager::new(WIDTH as f64, HEIGHT as f64);
 
-        for i in 0..10 {
+        for i in 0..12 {
             let name = format!("node {i}");
             nodeManager.add_node(&name);
         }
@@ -45,16 +48,14 @@ impl App {
         nodeManager.add_edge(3, 9);
 
         nodeManager.add_edge(0, 7);
-        //nodeManager.add_edge(10, 11);
+        nodeManager.add_edge(10, 11); // 0から辿れないので現在は描画されない
 
-        setup_layout::SetupTreeLayout(&mut nodeManager);
+        setup_layout::setup_tree_layout(&mut nodeManager);
+        
 
         let app = App { x: 0.0, y: 0.0, nodeManager: nodeManager };
         pyxel.run(app);
     }
-
-    //fn update(&mut self, pyxel: &mut Pyxel);
-    //fn draw(&mut self, pyxel: &mut Pyxel);
 }
 
 impl PyxelCallback for App {
@@ -66,6 +67,12 @@ impl PyxelCallback for App {
 
         if pyxel.btnp(pyxel::KEY_Q, None, None) {
             pyxel.quit();
+        }
+        if pyxel.btnp(pyxel::KEY_T, None, None) {
+            setup_layout::setup_tree_layout(&mut self.nodeManager);
+        }
+        if pyxel.btnp(pyxel::KEY_S, None, None) {
+            setup_layout::setup_spring_layout(&mut self.nodeManager);
         }
         self.nodeManager.update(pyxel);
     }
