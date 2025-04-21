@@ -169,6 +169,8 @@ impl App {
         let prev_frame_count = pyxel.frame_count;
         let fps = 0.0;
 
+        //pyxel.perf_monitor(true);
+
         let app = App { w, h, fishes, start_time, prev_frame_count, fps };
         pyxel.run(app);
     }

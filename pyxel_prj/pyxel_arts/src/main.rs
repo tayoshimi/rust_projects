@@ -1,49 +1,35 @@
 use pyxel::{Pyxel, PyxelCallback};
+mod firework;
+//use firework;
 
-pub struct App {
-    x: f64,
-    y: f64,
-}
-
-impl App {
-    fn init() {
-        let mut pyxel = pyxel::init(
-            200,
-            200,
-            Some("Hello, Pyxel in Rust!"),
-            None,
-            None,
-            None,
-            None,
-            None,
-        );
-        pyxel.mouse(true);
-        pyxel.warp_mouse(10.0, 10.0);
-
-
-        let app = App { x: 0.0, y: 0.0 };
-        pyxel.run(app);
-    }
-}
-
-impl PyxelCallback for App {
-    fn update(&mut self, pyxel: &mut Pyxel) {
-        if pyxel.frame_count < 60 * 6 {
-            self.x += (pyxel.frame_count % 2) as f64;
-            self.y += 1.0;
-        }
-
-        if pyxel.btnp(pyxel::KEY_Q, None, None) {
-            pyxel.quit();
-        }
-    }
-
-    fn draw(&mut self, pyxel: &mut Pyxel) {
-        pyxel.cls(3);
-        pyxel.circ(self.x, self.y, 2.0, 16);
-    }
-}
+mod many_rect;
+//use many_rect;
 
 pub fn main() {
-    App::init();
+    let mut pyxel = pyxel::init(
+        200,
+        200,
+        Some("Hello, Pyxel in Rust!"),
+        None,
+        None,
+        None,
+        None,
+        None,
+    );
+    pyxel.mouse(true);
+    pyxel.warp_mouse(10.0, 10.0);
+
+    let app_name = "App1";
+
+    // 選択された App をトレイトオブジェクトとして生成
+    let mut app: Box<dyn PyxelCallback> = match app_name {
+        "App1" => Box::new(firework::App::init(&mut pyxel)),
+        "App2" => Box::new(many_rect::App::init(&mut pyxel)),
+        _ => {
+            eprintln!("未知のアプリ: {}. 'App1' を使用します。", app_name);
+            Box::new(firework::App::init(&mut pyxel))
+        }
+    };
+
+    pyxel.run(&mut app);
 }

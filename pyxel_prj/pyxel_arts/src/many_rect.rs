@@ -40,7 +40,7 @@ impl Object {
     }
 }
 
-struct App {
+pub struct App {
     w: u32,
     h: u32,
     objects: Vec<Object>,
@@ -51,17 +51,7 @@ struct App {
 
 
 impl App {
-    fn init() {
-        let mut pyxel = pyxel::init(
-            WIDTH,
-            HEIGHT,
-            Some("Hello, Pyxel in Rust!"),
-            None,
-            None,
-            None,
-            None,
-            None,
-        );
+    pub fn init(pyxel: &mut Pyxel) -> Self {
         pyxel.mouse(true);
         pyxel.warp_mouse(10.0, 10.0);
 
@@ -71,8 +61,7 @@ impl App {
         let prev_frame_count = pyxel.frame_count;
         let fps = 0.0;
 
-        let app = App { w:WIDTH, h:HEIGHT, objects, start_time, prev_frame_count, fps };
-        pyxel.run(app);
+        App { w:WIDTH, h:HEIGHT, objects, start_time, prev_frame_count, fps }
     }
 }
 
@@ -118,5 +107,16 @@ impl PyxelCallback for App {
 }
 
 pub fn main() {
-    App::init();
+    let mut pyxel = pyxel::init(
+        WIDTH,
+        HEIGHT,
+        Some("Hello, Pyxel in Rust!"),
+        None,
+        None,
+        None,
+        None,
+        None,
+    );
+    let app = App::init(&mut pyxel);
+    pyxel.run(app);
 }

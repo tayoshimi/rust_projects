@@ -1,6 +1,9 @@
 use pyxel::{Pyxel, PyxelCallback};
 use std::iter;
 
+const WIDTH: u32 = 256;
+const HEIGHT: u32 = 192;
+
 #[derive(Clone)]
 struct Particle {
     x: f64,
@@ -114,28 +117,13 @@ pub struct App {
 }
 
 impl App {
-    fn init() {
-        let w = 160;
-        let h = 120;
-
-        let mut pyxel = pyxel::init(
-            w,
-            h,
-            Some("Hello, Pyxel in Rust!"),
-            None,
-            None,
-            None,
-            None,
-            None,
-        );
+    pub fn init(pyxel: &mut Pyxel) -> Self {
         pyxel.mouse(true);
         pyxel.warp_mouse(10.0, 10.0);
 
-
         let mut firework = Firework::new(200);
 
-        let app = App { w: w, h: h, firework: firework };
-        pyxel.run(app);
+        App { w: WIDTH, h: HEIGHT, firework: firework }
     }
 }
 
@@ -169,5 +157,16 @@ impl PyxelCallback for App {
 }
 
 pub fn main() {
-    App::init();
+    let mut pyxel = pyxel::init(
+        WIDTH,
+        HEIGHT,
+        Some("Hello, Pyxel in Rust!"),
+        None,
+        None,
+        None,
+        None,
+        None,
+    );
+    let app = App::init(&mut pyxel);
+    pyxel.run(app);
 }
