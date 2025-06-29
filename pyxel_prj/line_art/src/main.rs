@@ -134,6 +134,11 @@ impl Point {
         if self.y < 0.0 { self.y = 0.0; self.vy = -self.vy; }
         else if self.y > HEIGHT as f64 - 4.0 { self.y = HEIGHT as f64 - 4.0; self.vy = -self.vy; }
     }
+
+    fn draw(&mut self, pyxel: &mut Pyxel) {
+        pyxel.circ(self.x, self.y, 2.0, self.color);
+
+    }
 }
 
 struct App {
@@ -204,7 +209,11 @@ impl PyxelCallback for App {
 
     fn draw(&mut self, pyxel: &mut Pyxel) {
         pyxel.cls(1);
-        for point in &self.points {
+        for point in &mut self.points {
+
+            point.draw(pyxel);
+
+            /*
             //pyxel.rect(point.x as f64, point.y as f64, 4.0, 2.0, 7);
             // 進行方向を計算（速度ベクトルの角度）
             let angle = point.vy.atan2(point.vx);
@@ -220,6 +229,7 @@ impl PyxelCallback for App {
 
             // 三角形を描画
             pyxel.tri(x1, y1, x2, y2, x3, y3, point.color); // 白色で描画
+            */
         }
 
         // FPSの表示
