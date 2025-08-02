@@ -6,6 +6,8 @@ const WIDTH: u32 = 640;
 const HEIGHT: u32 = 480;
 const POINTS_SIZE: usize = 800;
 
+const MAX_LINE_DIST:f64 = 20.0;
+
 const PERCEPTION_RADIUS: f64 = 10.0; // 知覚半径
 const SEPARATION_WEIGHT: f64 = 2.5;  // 分離の重み
 const ALIGNMENT_WEIGHT: f64 = 1.0;   // 整列の重み
@@ -19,6 +21,7 @@ struct Point {
     vx: f64,
     vy: f64,
     color: u8,
+    max_line_dist: f64,
     perception_radius: f64,
 }
 
@@ -30,6 +33,7 @@ impl Point {
             vx: Pyxel::rndf(-1.0, 1.0),
             vy: Pyxel::rndf(-1.0, 1.0),
             color: Pyxel::rndi(3,11) as u8,
+            max_line_dist: MAX_LINE_DIST,
             perception_radius: PERCEPTION_RADIUS,
         }
     }
@@ -39,7 +43,7 @@ impl Point {
             let dx = self.x - f.x;
             let dy = self.y - f.y;
             let distance = (dx * dx + dy * dy).sqrt();
-            distance < self.perception_radius && distance > 0.0
+            distance < self.max_line_dist && distance > 0.0
         }).collect()
     }
 
@@ -213,6 +217,9 @@ impl PyxelCallback for App {
 
             point.draw(pyxel);
 
+             for fish in &self.fishes {
+             }
+             
             /*
             //pyxel.rect(point.x as f64, point.y as f64, 4.0, 2.0, 7);
             // 進行方向を計算（速度ベクトルの角度）
