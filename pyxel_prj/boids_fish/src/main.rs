@@ -1,32 +1,32 @@
 use pyxel::{Pyxel, PyxelCallback};
-use std::f64::consts::PI;
+use std::f32::consts::PI;
 use std::time::Instant;
 
 const WIDTH: u32 = 640;
 const HEIGHT: u32 = 480;
 const FISH_COUNT: usize = 800;
 
-const PERCEPTION_RADIUS: f64 = 10.0; // 知覚半径
-const SEPARATION_WEIGHT: f64 = 2.5;  // 分離の重み
-const ALIGNMENT_WEIGHT: f64 = 1.0;   // 整列の重み
-const COHESION_WEIGHT: f64 = 0.2;    // 結合の重み
-const MAX_SPEED: f64 = 1.5;          // 最大速度
+const PERCEPTION_RADIUS: f32 = 10.0; // 知覚半径
+const SEPARATION_WEIGHT: f32 = 2.5;  // 分離の重み
+const ALIGNMENT_WEIGHT: f32 = 1.0;   // 整列の重み
+const COHESION_WEIGHT: f32 = 0.2;    // 結合の重み
+const MAX_SPEED: f32 = 1.5;          // 最大速度
 
 #[derive(Clone)]
 struct Fish {
-    x: f64,
-    y: f64,
-    vx: f64,
-    vy: f64,
+    x: f32,
+    y: f32,
+    vx: f32,
+    vy: f32,
     color: u8,
-    perception_radius: f64,
+    perception_radius: f32,
 }
 
 impl Fish {
     fn new() -> Self {
         Fish {
-            x: Pyxel::rndf(0.0, WIDTH as f64),
-            y: Pyxel::rndf(0.0, HEIGHT as f64),
+            x: Pyxel::rndf(0.0, WIDTH as f32),
+            y: Pyxel::rndf(0.0, HEIGHT as f32),
             vx: Pyxel::rndf(-1.0, 1.0),
             vy: Pyxel::rndf(-1.0, 1.0),
             color: Pyxel::rndi(3,11) as u8,
@@ -43,7 +43,7 @@ impl Fish {
         }).collect()
     }
 
-    fn separation(&self, neighbors: &[&Fish]) -> (f64, f64) {
+    fn separation(&self, neighbors: &[&Fish]) -> (f32, f32) {
         let mut steer_x = 0.0;
         let mut steer_y = 0.0;
         let mut count = 0;
@@ -60,14 +60,14 @@ impl Fish {
         }
 
         if count > 0 {
-            steer_x /= count as f64;
-            steer_y /= count as f64;
+            steer_x /= count as f32;
+            steer_y /= count as f32;
         }
 
         (steer_x, steer_y)
     }
 
-    fn alignment(&self, neighbors: &[&Fish]) -> (f64, f64) {
+    fn alignment(&self, neighbors: &[&Fish]) -> (f32, f32) {
         let mut avg_vx = 0.0;
         let mut avg_vy = 0.0;
         let count = neighbors.len();
@@ -77,14 +77,14 @@ impl Fish {
                 avg_vx += neighbor.vx;
                 avg_vy += neighbor.vy;
             }
-            avg_vx /= count as f64;
-            avg_vy /= count as f64;
+            avg_vx /= count as f32;
+            avg_vy /= count as f32;
         }
 
         (avg_vx, avg_vy)
     }
 
-    fn cohesion(&self, neighbors: &[&Fish]) -> (f64, f64) {
+    fn cohesion(&self, neighbors: &[&Fish]) -> (f32, f32) {
         let mut center_x = 0.0;
         let mut center_y = 0.0;
         let count = neighbors.len();
@@ -94,8 +94,8 @@ impl Fish {
                 center_x += neighbor.x;
                 center_y += neighbor.y;
             }
-            center_x /= count as f64;
-            center_y /= count as f64;
+            center_x /= count as f32;
+            center_y /= count as f32;
 
             let steer_x = center_x - self.x;
             let steer_y = center_y - self.y;
@@ -130,9 +130,9 @@ impl Fish {
         self.y += self.vy;
 
         if self.x < 0.0 { self.x = 0.0; self.vx = -self.vx; }
-        else if self.x > WIDTH as f64 - 4.0 { self.x = WIDTH as f64 - 4.0; self.vx = -self.vx; }
+        else if self.x > WIDTH as f32 - 4.0 { self.x = WIDTH as f32 - 4.0; self.vx = -self.vx; }
         if self.y < 0.0 { self.y = 0.0; self.vy = -self.vy; }
-        else if self.y > HEIGHT as f64 - 4.0 { self.y = HEIGHT as f64 - 4.0; self.vy = -self.vy; }
+        else if self.y > HEIGHT as f32 - 4.0 { self.y = HEIGHT as f32 - 4.0; self.vy = -self.vy; }
     }
 }
 
@@ -142,7 +142,7 @@ struct App {
     fishes: Vec<Fish>,
     start_time: Instant, // FPS計算用の開始時間
     prev_frame_count: u32, // 前回のフレームカウント
-    fps: f64, // 計算されたFPS
+    fps: f32, // 計算されたFPS
 }
 
 impl App {
@@ -193,10 +193,10 @@ impl PyxelCallback for App {
         }
 
         // FPSの計算（1秒ごとに更新）
-        let elapsed = self.start_time.elapsed().as_secs_f64();
+        let elapsed = self.start_time.elapsed().as_secs_f32();
         if elapsed >= 1.0 {
             let frames = pyxel.frame_count - self.prev_frame_count;
-            self.fps = frames as f64 / elapsed;
+            self.fps = frames as f32 / elapsed;
             self.start_time = Instant::now();
             self.prev_frame_count = pyxel.frame_count;
         }
@@ -205,7 +205,7 @@ impl PyxelCallback for App {
     fn draw(&mut self, pyxel: &mut Pyxel) {
         pyxel.cls(1);
         for fish in &self.fishes {
-            //pyxel.rect(fish.x as f64, fish.y as f64, 4.0, 2.0, 7);
+            //pyxel.rect(fish.x as f32, fish.y as f32, 4.0, 2.0, 7);
             // 進行方向を計算（速度ベクトルの角度）
             let angle = fish.vy.atan2(fish.vx);
 
