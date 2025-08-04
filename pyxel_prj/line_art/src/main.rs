@@ -47,82 +47,7 @@ impl Point {
         }).collect()
     }
 
-    fn separation(&self, neighbors: &[&Point]) -> (f32, f32) {
-        let mut steer_x = 0.0;
-        let mut steer_y = 0.0;
-        let mut count = 0;
-
-        for neighbor in neighbors {
-            let dx = self.x - neighbor.x;
-            let dy = self.y - neighbor.y;
-            let distance = (dx * dx + dy * dy).sqrt();
-            if distance > 0.0 {
-                steer_x += dx / distance;
-                steer_y += dy / distance;
-                count += 1;
-            }
-        }
-
-        if count > 0 {
-            steer_x /= count as f32;
-            steer_y /= count as f32;
-        }
-
-        (steer_x, steer_y)
-    }
-
-    fn alignment(&self, neighbors: &[&Point]) -> (f32, f32) {
-        let mut avg_vx = 0.0;
-        let mut avg_vy = 0.0;
-        let count = neighbors.len();
-
-        if count > 0 {
-            for neighbor in neighbors {
-                avg_vx += neighbor.vx;
-                avg_vy += neighbor.vy;
-            }
-            avg_vx /= count as f32;
-            avg_vy /= count as f32;
-        }
-
-        (avg_vx, avg_vy)
-    }
-
-    fn cohesion(&self, neighbors: &[&Point]) -> (f32, f32) {
-        let mut center_x = 0.0;
-        let mut center_y = 0.0;
-        let count = neighbors.len();
-
-        if count > 0 {
-            for neighbor in neighbors {
-                center_x += neighbor.x;
-                center_y += neighbor.y;
-            }
-            center_x /= count as f32;
-            center_y /= count as f32;
-
-            let steer_x = center_x - self.x;
-            let steer_y = center_y - self.y;
-            return (steer_x, steer_y);
-        }
-
-        (0.0, 0.0)
-    }
-
     fn update(&mut self, points: &[Point]) {
-        let neighbors = self.get_neighbors(points);
-
-        let (sep_x, sep_y) = self.separation(&neighbors);
-        let (align_x, align_y) = self.alignment(&neighbors);
-        let (coh_x, coh_y) = self.cohesion(&neighbors);
-
-        let separation_weight = SEPARATION_WEIGHT;
-        let alignment_weight = ALIGNMENT_WEIGHT;
-        let cohesion_weight = COHESION_WEIGHT;
-
-        self.vx += sep_x * separation_weight + align_x * alignment_weight + coh_x * cohesion_weight;
-        self.vy += sep_y * separation_weight + align_y * alignment_weight + coh_y * cohesion_weight;
-
         let speed = (self.vx * self.vx + self.vy * self.vy).sqrt();
         let max_speed = MAX_SPEED;
         if speed > max_speed {
@@ -213,13 +138,16 @@ impl PyxelCallback for App {
 
     fn draw(&mut self, pyxel: &mut Pyxel) {
         pyxel.cls(1);
+        let points_clone = self.points.clone();
         for point in &mut self.points {
 
-            point.draw(pyxel);
-
-            // for fish in &self.fishes {
+            // for point_clone in &points_clone {
             // }
-             
+           let pair_points =  point.get_neighbors(&points_clone);
+           for pair in pair_points {
+                pyxel.line(point.x, point.y, pair.x, pair.y, point.color); 
+           }
+            point.draw(pyxel);
             /*
             //pyxel.rect(point.x as f64, point.y as f64, 4.0, 2.0, 7);
             // 進行方向を計算（速度ベクトルの角度）
