@@ -145,7 +145,8 @@ impl PyxelCallback for App {
             // }
            let pair_points =  point.get_neighbors(&points_clone);
            for pair in pair_points {
-                pyxel.line(point.x, point.y, pair.x, pair.y, point.color); 
+               // pyxel.line(point.x, point.y, pair.x, pair.y, point.color);
+                pyxel.line(point.x, point.y, pair.x, pair.y, 7); 
            }
             point.draw(pyxel);
             /*
