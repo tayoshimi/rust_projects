@@ -1,5 +1,13 @@
 ## ビルド方法
 
+zantei
+
+'''
+cargo run --features sdl2
+'''
+
+
+
 '''
 cargo run --example <example_name>
 '''
