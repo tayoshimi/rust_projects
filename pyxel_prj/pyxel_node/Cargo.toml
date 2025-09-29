@@ -6,3 +6,8 @@ edition = "2024"
 [dependencies]
 pyxel-engine = { path = "../pyxel/rust/pyxel-engine" }
 petgraph = "0.8.1"
+
+[features]
+default=['sdl2']
+sdl2 = ["pyxel-engine/sdl2"]
+sdl2_bundle = ["pyxel-engine/sdl2_bundle"]

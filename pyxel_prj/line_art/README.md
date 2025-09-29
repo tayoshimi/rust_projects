@@ -1,21 +1,7 @@
 ## ビルド方法
 
-zantei
+../pyxel_simple_template/README.md参照
 
-'''
-cargo run --features sdl2
-'''
-
-
-
-'''
-cargo run --example <example_name>
-'''
-
-<example_name>は、Cargo.tomlに記述されている -> [[example]] name = "bit_composition_01"
-
-
-
-## linux用ビルド
+## linux用ビルド環境構築
 
 ../README.md参照
