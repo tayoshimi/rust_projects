@@ -15,10 +15,10 @@ use std::collections::HashMap;
 
 
 // ノードの位置を計算する関数
-fn calc_pos(node_manager: &NodeManager, depth: usize, idx: usize, total_nodes_at_depth: usize) -> (f64, f64) {
-    let horizontal_space = node_manager.world_w / (total_nodes_at_depth + 1) as f64;
-    let x = horizontal_space * (idx + 1) as f64;
-    let y = 10.0 + (Node::NORMAL_H + NodeManager::NODE_SPACE) * depth as f64;
+fn calc_pos(node_manager: &NodeManager, depth: usize, idx: usize, total_nodes_at_depth: usize) -> (f32, f32) {
+    let horizontal_space = node_manager.world_w / (total_nodes_at_depth + 1) as f32;
+    let x = horizontal_space * (idx + 1) as f32;
+    let y = 10.0 + (Node::NORMAL_H + NodeManager::NODE_SPACE) * depth as f32;
     (x, y)
 }
 
@@ -62,7 +62,7 @@ pub fn setup_tree_layout(node_manager: &mut NodeManager) {
 }
 
 // 2点間の距離を計算する関数
-fn calc_distance(x1: f64, y1: f64, x2: f64, y2: f64) -> f64 {
+fn calc_distance(x1: f32, y1: f32, x2: f32, y2: f32) -> f32 {
     ((x2 - x1).powi(2) + (y2 - y1).powi(2)).sqrt()
 }
 
@@ -72,21 +72,21 @@ pub fn setup_spring_layout(node_manager: &mut NodeManager) {
     let height = node_manager.world_h; // ワールドの高さを使用
     
     // 理想的なノード間距離 k を計算
-    let k = 0.2 * (width * height / node_manager.graph.node_count() as f64).sqrt();
+    let k = 0.2 * (width * height / node_manager.graph.node_count() as f32).sqrt();
     let mut temperature = width / 10.0; // 初期温度
-    let mut positions: HashMap<NodeIndex, (f64, f64)> = HashMap::new();
+    let mut positions: HashMap<NodeIndex, (f32, f32)> = HashMap::new();
 
     // 1. ノードの初期位置をランダムに設定
     for node in node_manager.graph.node_indices() {
-        let x = Pyxel::rndf(0.0, width as f64);
-        let y = Pyxel::rndf(0.0, height as f64);
+        let x = Pyxel::rndf(0.0, width as f32);
+        let y = Pyxel::rndf(0.0, height as f32);
         positions.insert(node, (x, y));
     }
 
     // 2. イテレーションを繰り返してレイアウトを調整
     for _ in 0..200 {
         // 力を保持するマップを初期化
-        let mut disp: HashMap<NodeIndex, (f64, f64)> = HashMap::new();
+        let mut disp: HashMap<NodeIndex, (f32, f32)> = HashMap::new();
         for node in node_manager.graph.node_indices() {
             disp.insert(node, (0.0, 0.0));
         }

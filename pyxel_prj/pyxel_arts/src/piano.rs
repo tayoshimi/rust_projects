@@ -7,18 +7,18 @@ const OBJECT_COUNT: usize = 300;
 
 #[derive(Clone)]
 struct Object {
-    x: f64,
-    y: f64,
-    vx: f64,
-    vy: f64,
+    x: f32,
+    y: f32,
+    vx: f32,
+    vy: f32,
     color: u8,
 }
 
 impl Object {
     fn new(pyxel: &mut Pyxel) -> Self {
         Object {
-            x: Pyxel::rndf(0.0, WIDTH as f64),
-            y: Pyxel::rndf(0.0, HEIGHT as f64),
+            x: Pyxel::rndf(0.0, WIDTH as f32),
+            y: Pyxel::rndf(0.0, HEIGHT as f32),
             vx: Pyxel::rndf(-1.0, 1.0),
             vy: Pyxel::rndf(-1.0, 1.0),
             color: Pyxel::rndi(4, 11) as u8,
@@ -29,9 +29,9 @@ impl Object {
         self.x += self.vx;
         self.y += self.vy;
         if self.x < 0.0 { self.x = 0.0; self.vx = -self.vx; }
-        else if self.x > WIDTH as f64 - 4.0 { self.x = WIDTH as f64 - 4.0; self.vx = -self.vx; }
+        else if self.x > WIDTH as f32 - 4.0 { self.x = WIDTH as f32 - 4.0; self.vx = -self.vx; }
         if self.y < 0.0 { self.y = 0.0; self.vy = -self.vy; }
-        else if self.y > HEIGHT as f64 - 4.0 { self.y = HEIGHT as f64 - 4.0; self.vy = -self.vy; }
+        else if self.y > HEIGHT as f32 - 4.0 { self.y = HEIGHT as f32 - 4.0; self.vy = -self.vy; }
         self.vx += Pyxel::rndf(-0.1, 0.1);
         self.vy += Pyxel::rndf(-0.1, 0.1);
         self.vx = self.vx.clamp(-1.5, 1.5);
@@ -40,15 +40,15 @@ impl Object {
 }
 
 struct PianoKey {
-    x: f64,
-    y: f64,
-    width: f64,
-    height: f64,
+    x: f32,
+    y: f32,
+    width: f32,
+    height: f32,
     key_type: char,  // 'C', 'D', 'E', 'F', 'G', 'A', 'B'
 }
 
 impl PianoKey {
-    fn new(x: f64, y: f64, width: f64, height: f64, key_type: char) -> Self {
+    fn new(x: f32, y: f32, width: f32, height: f32, key_type: char) -> Self {
         PianoKey { x, y, width, height, key_type }
     }
 
@@ -82,9 +82,9 @@ impl Piano {
         
         // Define the 2 octaves of piano keys
         for i in 0..12 * 2 {  // 7 notes per octave * 2 octaves
-            let x = (i as f64) * (WIDTH as f64 / (12 * 2) as f64);
-            let y = HEIGHT as f64 - 50.0;
-            let width = WIDTH as f64 / (12 * 2) as f64;
+            let x = (i as f32) * (WIDTH as f32 / (12 * 2) as f32);
+            let y = HEIGHT as f32 - 50.0;
+            let width = WIDTH as f32 / (12 * 2) as f32;
             let height = 40.0;
             keys.push(PianoKey::new(x, y, width, height, ['C', 'D', 'E', 'F', 'G', 'A', 'B'][i % 7]));
         }
@@ -98,7 +98,7 @@ impl Piano {
         }
     }
 
-    fn play_sound(&self, x: f64, pyxel: &mut Pyxel) {
+    fn play_sound(&self, x: f32, pyxel: &mut Pyxel) {
         let mut found = false;
         for key in &self.keys {
             if key.x <= x && x < key.x + key.width {
@@ -120,7 +120,7 @@ struct App {
     objects: Vec<Object>,
     start_time: Instant, // FPS計算用の開始時間
     prev_frame_count: u32, // 前回のフレームカウント
-    fps: f64, // 計算されたFPS
+    fps: f32, // 計算されたFPS
 }
 
 
@@ -158,7 +158,7 @@ impl App {
 impl PyxelCallback for App {
     fn update(&mut self, pyxel: &mut Pyxel) {
         // if pyxel.frame_count < 60 * 6 {
-        //     self.x += (pyxel.frame_count % 2) as f64;
+        //     self.x += (pyxel.frame_count % 2) as f32;
         //     self.y += 1.0;
         // }
 
@@ -169,16 +169,16 @@ impl PyxelCallback for App {
         if pyxel.btnp(pyxel::MOUSE_BUTTON_LEFT, None, None) {
             let x = pyxel.mouse_x;
             let y = pyxel.mouse_y;
-            self.piano.play_sound(x as f64, pyxel);
+            self.piano.play_sound(x as f32, pyxel);
         }
 
         for object in &mut self.objects { object.update(pyxel); }
 
         // FPSの計算（1秒ごとに更新）
-        let elapsed = self.start_time.elapsed().as_secs_f64();
+        let elapsed = self.start_time.elapsed().as_secs_f32();
         if elapsed >= 1.0 {
             let frames = pyxel.frame_count - self.prev_frame_count;
-            self.fps = frames as f64 / elapsed;
+            self.fps = frames as f32 / elapsed;
             self.start_time = Instant::now();
             self.prev_frame_count = pyxel.frame_count;
         }
@@ -190,12 +190,12 @@ impl PyxelCallback for App {
         self.piano.draw(pyxel);
 
         for object in &self.objects {
-            pyxel.rect(object.x as f64, object.y as f64, 4.0, 2.0, object.color);
+            pyxel.rect(object.x as f32, object.y as f32, 4.0, 2.0, object.color);
         }
 
         // FPSの表示
         let fps_text = format!("FPS: {:.2}", self.fps);
-        pyxel.text(self.w as f64 - 50.0, 10.0, &fps_text, 7, None);
+        pyxel.text(self.w as f32 - 50.0, 10.0, &fps_text, 7, None);
     }
 }
 

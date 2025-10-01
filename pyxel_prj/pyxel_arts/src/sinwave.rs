@@ -39,10 +39,10 @@ impl PyxelCallback for App {
     fn draw(&mut self, pyxel: &mut Pyxel) {
         pyxel.cls(1);
 
-        pyxel.line(0.0, (self.h/2) as f64, self.w as f64, (self.h/2) as f64, pyxel::COLOR_WHITE);
+        pyxel.line(0.0, (self.h/2) as f32, self.w as f32, (self.h/2) as f32, pyxel::COLOR_WHITE);
         for c in 0..=360 {
-          let x = (self.w * c / 360) as f64;
-          let y = ((self.h/2) as f64 + pyxel.sin(c as f64) * 50.0) as f64;
+          let x = (self.w * c / 360) as f32;
+          let y = ((self.h/2) as f32 + Pyxel::sin(c as f32) * 50.0) as f32;
           pyxel.pset(x, y, pyxel::COLOR_RED);
         }
     }

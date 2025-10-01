@@ -6,13 +6,13 @@ const HEIGHT: u32 = 192;
 
 #[derive(Clone)]
 struct Particle {
-    x: f64,
-    y: f64,
-    vx: f64,
-    vy: f64,
+    x: f32,
+    y: f32,
+    vx: f32,
+    vy: f32,
     color: u8,
-    speed: f64,
-    deg: f64,
+    speed: f32,
+    deg: f32,
     timer: u16,
     alive: bool,
 }
@@ -45,7 +45,7 @@ impl Particle {
 
     fn draw(&self, pyxel: &mut Pyxel) {
         //screen.set_color();
-        //pyxel.pset(self.x as f64, self.y as f64, self.vx * 2.0, self.vy * 2.0);
+        //pyxel.pset(self.x as f32, self.y as f32, self.vx * 2.0, self.vy * 2.0);
         pyxel.pset(self.x, self.y, self.color);
     }
 
@@ -69,13 +69,13 @@ impl Firework {
         Firework { particles: particles }
     }
 
-    fn add_particle(&mut self, x: i32, y: i32, deg: f64, speed: f64, color: u8) {
+    fn add_particle(&mut self, x: i32, y: i32, deg: f32, speed: f32, color: u8) {
         let mut particle = Particle::new();
  
         //self.particles.push(particle);
         if let Some(particle) = self.particles.iter_mut().find(|particle| particle.alive == false) {
-            particle.x = x as f64;
-            particle.y = y as f64;
+            particle.x = x as f32;
+            particle.y = y as f32;
             particle.color = color;
             particle.speed = speed;
             particle.deg = deg;
@@ -90,7 +90,7 @@ impl Firework {
 
     fn add_fires(&mut self, x: i32, y: i32) {
         for i in 0..32 {
-            let deg = Pyxel::rndi(0, 360) as f64;
+            let deg = Pyxel::rndi(0, 360) as f32;
             let speed = 0.1 + Pyxel::rndf(0.1, 1.0) * 1.5;
             let color =Pyxel::rndi(8,10) as u8;
             self.add_particle(x, y, deg, speed, color);
@@ -130,7 +130,7 @@ impl App {
 impl PyxelCallback for App {
     fn update(&mut self, pyxel: &mut Pyxel) {
         // if pyxel.frame_count < 60 * 6 {
-        //     self.x += (pyxel.frame_count % 2) as f64;
+        //     self.x += (pyxel.frame_count % 2) as f32;
         //     self.y += 1.0;
         // }
 

@@ -11,10 +11,10 @@ pub struct Node {
 }
 
 impl Node {
-    pub const NORMAL_W:f64 = 10.0;
-    pub const NORMAL_H:f64 = 10.0;
-    pub const FONT_W:f64 = 4.0;
-    pub const FONT_H:f64 = 8.0;
+    pub const NORMAL_W:f32 = 10.0;
+    pub const NORMAL_H:f32 = 10.0;
+    pub const FONT_W:f32 = 4.0;
+    pub const FONT_H:f32 = 8.0;
 
     pub fn new(x: i32,
                y: i32) -> Node {
@@ -26,7 +26,7 @@ impl Node {
                }
 
                pub fn rise(&mut self, pyxel: &mut Pyxel) {
-                self.color = pyxel.rndi(8,10) as u8;
+                self.color = Pyxel::rndi(8,10) as u8;
                 self.alive = true;
                }
 
@@ -48,8 +48,8 @@ impl Node {
                }
 
                pub fn draw(&mut self, pyxel: &mut Pyxel) {
-                   pyxel.elli(self.x as f64, self.y as f64, Node::NORMAL_W, Node::NORMAL_H, self.color);
-                   pyxel.ellib(self.x as f64, self.y as f64, Node::NORMAL_W, Node::NORMAL_H, pyxel::COLOR_WHITE);
+                   pyxel.elli(self.x as f32, self.y as f32, Node::NORMAL_W, Node::NORMAL_H, self.color);
+                   pyxel.ellib(self.x as f32, self.y as f32, Node::NORMAL_W, Node::NORMAL_H, pyxel::COLOR_WHITE);
                }
 }
 
@@ -138,7 +138,7 @@ impl App {
 impl PyxelCallback for App {
     fn update(&mut self, pyxel: &mut Pyxel) {
         // if pyxel.frame_count < 60 * 6 {
-        //     self.x += (pyxel.frame_count % 2) as f64;
+        //     self.x += (pyxel.frame_count % 2) as f32;
         //     self.y += 1.0;
         // }
 

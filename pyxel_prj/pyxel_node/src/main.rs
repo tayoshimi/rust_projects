@@ -30,7 +30,7 @@ impl App {
         pyxel.mouse(true);
         pyxel.warp_mouse(10.0, 10.0);
 
-        let mut node_manager = NodeManager::new(WIDTH as f64, HEIGHT as f64);
+        let mut node_manager = NodeManager::new(WIDTH as f32, HEIGHT as f32);
 
         for i in 0..12 {
             let name = format!("node {i}");

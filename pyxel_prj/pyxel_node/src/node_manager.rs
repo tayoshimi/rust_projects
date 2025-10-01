@@ -7,7 +7,7 @@ use petgraph::graph::NodeIndex;
 use petgraph::prelude::Dfs;
 use petgraph::visit::EdgeRef;
 
-// fn draw_text_with_border(x: f64, y: f64, s: &str, col, bcol, font, pyxel: &mut Pyxel) {
+// fn draw_text_with_border(x: f32, y: f32, s: &str, col, bcol, font, pyxel: &mut Pyxel) {
 //     for dx in range(-1, 2):
 //         for dy in range(-1, 2):
 //             if dx != 0 or dy != 0:
@@ -23,20 +23,20 @@ use petgraph::visit::EdgeRef;
 
 pub struct Node {
     name: String,
-    x: f64,
-    y: f64,
+    x: f32,
+    y: f32,
     pub depth: usize,
 }
 
 impl Node {
-    pub const NORMAL_W:f64 = 40.0;
-    pub const NORMAL_H:f64 = 18.0;
-    pub const FONT_W:f64 = 4.0;
-    pub const FONT_H:f64 = 8.0;
+    pub const NORMAL_W:f32 = 40.0;
+    pub const NORMAL_H:f32 = 18.0;
+    pub const FONT_W:f32 = 4.0;
+    pub const FONT_H:f32 = 8.0;
 
     pub fn new(name: &str,
-        x: f64,
-        y: f64) -> Node {
+        x: f32,
+        y: f32) -> Node {
             Node {name: name.to_string(), x: x, y: y, depth: 0
             }
 
@@ -45,23 +45,23 @@ impl Node {
     pub fn update(&mut self, pyxel: &mut Pyxel) {
     }
 
-    pub fn set_pos(&mut self, x: f64, y: f64) {
+    pub fn set_pos(&mut self, x: f32, y: f32) {
         self.x = x;
         self.y = y;
     }
 
-    pub fn move_pos(&mut self, vx: f64, vy: f64) {
+    pub fn move_pos(&mut self, vx: f32, vy: f32) {
         self.x = self.x + vx;
         self.y = self.y + vy;
     }
 
-    pub fn get_center(&self) -> (f64, f64) {
+    pub fn get_center(&self) -> (f32, f32) {
         (self.x + Node::NORMAL_W / 2.0, self.y + Node::NORMAL_H / 2.0)
     }
 
-    fn get_text_draw_pos(&mut self) -> (f64, f64) {
-        let tx: f64 = self.x + (Node::NORMAL_W - Node::FONT_W * self.name.len() as f64) / 2.0;
-        let ty: f64 = self.y + (Node::NORMAL_H - Node::FONT_H) / 2.0;
+    fn get_text_draw_pos(&mut self) -> (f32, f32) {
+        let tx: f32 = self.x + (Node::NORMAL_W - Node::FONT_W * self.name.len() as f32) / 2.0;
+        let ty: f32 = self.y + (Node::NORMAL_H - Node::FONT_H) / 2.0;
         (tx, ty)
     }
 
@@ -78,17 +78,17 @@ impl Node {
 
 pub struct NodeManager {
     pub graph: Graph::<Node,(),petgraph::Directed>,
-    pub world_w: f64,
-    pub world_h: f64,
-    count: i64,
+    pub world_w: f32,
+    pub world_h: f32,
+    count: i32,
 }
 
 impl NodeManager {
-    pub const NODE_SPACE:f64 = 20.0;
+    pub const NODE_SPACE:f32 = 20.0;
 
     pub fn new(
-        world_w: f64,
-        world_h: f64) -> NodeManager {
+        world_w: f32,
+        world_h: f32) -> NodeManager {
             let mut graph = Graph::<Node,(),petgraph::Directed>::new();
             NodeManager {
                 graph: graph,
@@ -101,9 +101,9 @@ impl NodeManager {
     pub fn add_node(&mut self, name: &str) -> NodeIndex {
         let idx = self.graph.add_node(Node::new(name, 10.0, 10.0));
         // self.graph[idx].x = 10.0 + (Node::NORMAL_W + Self::NODE_SPACE) * (idx.index() as f64 % 5.0);
-        // self.graph[idx].y = 10.0 + (Node::NORMAL_H + Self::NODE_SPACE) * (idx.index() as f64 / 5.0);
-        self.graph[idx].x = (self.world_w - Node::NORMAL_W) / 2.0 + (Node::NORMAL_W + Self::NODE_SPACE) * (1 - (self.count % 2) * 2) as f64;
-        self.graph[idx].y = 10.0 + (Node::NORMAL_H + Self::NODE_SPACE) * (idx.index() as f64 / 5.0);
+        // self.graph[idx].y = 10.0 + (Node::NORMAL_H + Self::NODE_SPACE) * (idx.index() as f32 / 5.0);
+        self.graph[idx].x = (self.world_w - Node::NORMAL_W) / 2.0 + (Node::NORMAL_W + Self::NODE_SPACE) * (1 - (self.count % 2) * 2) as f32;
+        self.graph[idx].y = 10.0 + (Node::NORMAL_H + Self::NODE_SPACE) * (idx.index() as f32 / 5.0);
         
         self.count = self.count + 1;
         idx
