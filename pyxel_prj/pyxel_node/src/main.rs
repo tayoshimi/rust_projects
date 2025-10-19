@@ -7,8 +7,13 @@ mod setup_layout;
 
 
 pub struct App {
-    x: f64,
-    y: f64,
+    // x: f64,
+    // y: f64,
+    camera_x: f32,
+    camera_y: f32,
+    dragging: bool,
+    last_mouse_x: i32,
+    last_mouse_y: i32,
     node_manager: NodeManager,
 }
 
@@ -52,7 +57,14 @@ impl App {
         setup_layout::setup_tree_layout(&mut node_manager);
         
 
-        let app = App { x: 0.0, y: 0.0, node_manager: node_manager };
+        let app = App {             
+            camera_x: 0.0,
+            camera_y: 0.0,
+            dragging: false,
+            last_mouse_x: 0,
+            last_mouse_y: 0,
+            node_manager: node_manager 
+        };
         pyxel.run(app);
     }
 }
@@ -60,8 +72,32 @@ impl App {
 impl PyxelCallback for App {
     fn update(&mut self, pyxel: &mut Pyxel) {
         if pyxel.frame_count < 60 {
-            self.x += (pyxel.frame_count % 2) as f64;
-            self.y -= 1.0;
+            //self.x += (pyxel.frame_count % 2) as f64;
+            //self.y -= 1.0;
+        }
+
+                // ドラッグ開始（左ボタンを押した瞬間）
+        if pyxel.btnp(pyxel::MOUSE_BUTTON_LEFT, None, None) {
+            self.dragging = true;
+            self.last_mouse_x = pyxel.mouse_x;
+            self.last_mouse_y = pyxel.mouse_y;
+        }
+
+        // ドラッグ中（押し続け）
+        if self.dragging && pyxel.btn(pyxel::MOUSE_BUTTON_LEFT) {
+            let mx = pyxel.mouse_x;
+            let my = pyxel.mouse_y;
+            let dx = mx - self.last_mouse_x;
+            let dy = my - self.last_mouse_y;
+            self.camera_x += dx as f32;
+            self.camera_y += dy as f32;
+            self.last_mouse_x = mx;
+            self.last_mouse_y = my;
+        }
+
+        // ドラッグ終了（ボタンが離れたらフラグを下ろす）
+        if self.dragging && !pyxel.btn(pyxel::MOUSE_BUTTON_LEFT) {
+            self.dragging = false;
         }
 
         if pyxel.btnp(pyxel::KEY_Q, None, None) {
@@ -78,7 +114,7 @@ impl PyxelCallback for App {
 
     fn draw(&mut self, pyxel: &mut Pyxel) {
         pyxel.cls(3);
-        self.node_manager.draw(pyxel);
+        self.node_manager.draw(pyxel, self.camera_x as f32, self.camera_y as f32);
     }
 }
 

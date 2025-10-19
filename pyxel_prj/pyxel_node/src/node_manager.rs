@@ -65,12 +65,12 @@ impl Node {
         (tx, ty)
     }
 
-    pub fn draw(&mut self, pyxel: &mut Pyxel) {
-        pyxel.elli(self.x, self.y, Node::NORMAL_W, Node::NORMAL_H, pyxel::COLOR_RED);
-        pyxel.ellib(self.x, self.y, Node::NORMAL_W, Node::NORMAL_H, pyxel::COLOR_WHITE);
+    pub fn draw(&mut self, pyxel: &mut Pyxel, camera_x: f32, camera_y: f32) {
+        pyxel.elli(self.x+camera_x, self.y+camera_y, Node::NORMAL_W, Node::NORMAL_H, pyxel::COLOR_RED);
+        pyxel.ellib(self.x+camera_x, self.y+camera_y, Node::NORMAL_W, Node::NORMAL_H, pyxel::COLOR_WHITE);
         let (tx, ty) = self.get_text_draw_pos();
-        pyxel.text(tx, ty, &self.name, 10, None);
-        //pyxel.text(tx, ty, &self.depth.to_string(), 10, None);
+        pyxel.text(tx+camera_x, ty+camera_y, &self.name, 10, None);
+        //pyxel.text(tx-camera_x, ty, &self.depth.to_string(), 10, None);
 
     }
 
@@ -116,27 +116,27 @@ impl NodeManager {
     pub fn update(&mut self, pyxel: &mut Pyxel) {
     }
 
-    pub fn draw(&mut self, pyxel: &mut Pyxel) {
+    pub fn draw(&mut self, pyxel: &mut Pyxel, camera_x: f32, camera_y: f32) {
         let mut dfs = Dfs::new(&self.graph, NodeIndex::new(0));
         while let Some(nx) = dfs.next(&self.graph) {
             for edge in self.graph.edges_directed(nx, Direction::Outgoing) {
                 let t_nx = edge.target();
-                self.draw_edge(nx, t_nx, pyxel);
+                self.draw_edge(nx, t_nx, pyxel, camera_x, camera_y);
             }
             dfs.stack.push(nx);
             for edge in self.graph.edges_directed(nx, Direction::Incoming) {
                 dfs.stack.push(edge.source());
             }
 
-            self.graph[nx].draw(pyxel);
+            self.graph[nx].draw(pyxel, camera_x, camera_y);
         }
     }
 
-    fn draw_edge(&self, src_nx: NodeIndex, target_nx: NodeIndex, pyxel: &mut Pyxel) {
+    fn draw_edge(&self, src_nx: NodeIndex, target_nx: NodeIndex, pyxel: &mut Pyxel, camera_x: f32, camera_y: f32) {
         let (sx, sy) = self.graph[src_nx].get_center();
         let (tx, ty) = self.graph[target_nx].get_center();
 
-        pyxel.line(sx,sy,tx,ty,pyxel::COLOR_WHITE);
+        pyxel.line(sx+camera_x,sy+camera_y,tx+camera_x,ty+camera_y,pyxel::COLOR_WHITE);
     }
 
 }
